@@ -15,6 +15,10 @@ using namespace MyTRIM_NS;
 void
 TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 {
+#ifdef VERBOSE
+  std::ofstream verbose_file;
+  verbose_file.open("verbose_particle_history.dat");
+#endif
   // simconf should already be initialized
   _pka = pka;
 
@@ -289,7 +293,12 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     _recoil->_E -= _element->_Elbind;
     _recoil->_m = _element->_m;
     _recoil->_Z = _element->_Z;
-
+#ifdef VERBOSE
+    _recoil->_creation_pos = _recoil->_pos;
+    _recoil->_creation_E = _recoil->_E;
+    _recoil->_parent_E = _pka->_E + _den;
+    _recoil->_parent_id = _pka->_id;
+#endif
     // create a random vector perpendicular to _pka.dir
     // there is a cleverer way by using the azimuthal angle of scatter...
     do
@@ -359,6 +368,13 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
             _pka->_state = IonBase::REPLACEMENT;
           else
             _pka->_state = IonBase::SUBSTITUTIONAL;
+
+#ifdef VERBOSE
+          if (_pka->_Z == _element->_Z)
+              verbose_file << _pka << 'inter1' << std::endl;
+          else
+              verbose_file << _pka << 'inter2' << std::endl;
+#endif
         }
       } else {
         // this recoil will not leave its lattice site
@@ -367,6 +383,10 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
         // if the PKA has no energy left, put it to rest here as an interstitial
         if (_pka->_E < _pka->_Ef) {
+#ifdef VERBOSE
+  verbose_file << _pka << 'inter1' << std::endl;
+#endif
+
           _pka->_state = IonBase::INTERSTITIAL;
         }
       }
@@ -384,6 +404,8 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       std::cout << _pka->_state << ' ' << *_pka << '\n';
 
   } while (_pka->_state == IonBase::MOVING);
+
+  verbose_file.close();
 }
 
 bool

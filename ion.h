@@ -4,6 +4,8 @@
 #include <iostream>
 #include "simconf.h"
 
+#define VERBOSE
+
 namespace MyTRIM_NS {
 
 class IonBase
@@ -45,6 +47,19 @@ public:
   // final energy up to which this recoil will be followed in [eV]
   Real _Ef;
 
+#ifdef VERBOSE
+  // point where this recoil was created
+  Point _creation_pos;
+
+  // energy of this recoil at creation
+  Real _creation_E;
+
+  // energy of the parent at creation of this recoil
+  Real _parent_E;
+
+  // unique id of the parent
+  int _parent_id;
+#endif
   // state of the recoil:
   //   MOVING          ion is still being tracked
   //   REPLACEMENT     pka->_Z == element._Z && pka->_E < element._Edisp

@@ -68,6 +68,10 @@ namespace MyTRIM_NS {
     os << i._pos(0) << ' ' << i._pos(1) << ' ' << i._pos(2) << ' '
        << i._Z << ' ' << i._m << ' ' << i._E << ' '
        << i._id << ' ' << i._gen << ' ' << i._tag << ' ';
+#ifdef VERBOSE
+    os << i._creation_pos(0) << ' ' << i._creation_pos(1) << ' ' << i._creation_pos(2) << ' '
+      <<  i._creation_E << ' ' <<  i._parent_E << ' ' <<  i._parent_id << ' ';
+#endif
     return os;
   }
 }
